@@ -7,13 +7,11 @@
 		<title>reveal.js</title>
 
 		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/serif.css">
+		<link rel="stylesheet" href="css/theme/serif.css" id="theme">
 
 		<!-- Theme used for syntax highlighting of code -->
     <link rel="stylesheet" href="lib/css/zenburn.css">
     
-    <link ref="stylesheet" href="mermaid.css">
-
 		<!-- Printing and PDF exports -->
 		<script>
 			var link = document.createElement( 'link' );
@@ -216,85 +214,221 @@
         <section data-markdown>
           <script type="text/template">
             ##### 1.3.3 route.js实现
+            ```js
+            const User = require('../models/user/user_controller')
+
+            module.exports = function (app) {
+                
+                app.post ('/api/user/register', function (req, res) {
+                    User.userRegister(req, res)
+                })
+            
+                app.post ('/api/user/login', function(req, res) {
+                    User.userLogin(req, res)
+                })
+            
+                app.post ('/api/user/changePw', function (req, res) {
+                    User.userChangePw(req, res)
+                })
+            }
             ```
+          </script>
+        </section>
+        <section>
+          <section data-markdown>
+            <script type="text/template">
+              ##### 1.3.4.1 controller.js实现
+              ```js
+              let mongoose = require('mongoose')
+              let mongoosePaginate = require('mongoose-paginate')
+
+              let UserSchema = require('./user_model').UserSchema
+              UserSchema.plugin(mongoosePaginate)
+              let User = mongoose.model('UserSchema', UserSchema)
 
 
+              /**
+              * 用户注册
+              */
+              exports.userRegister = function(req, res) {
+                let user = new User(req.body);
+                console.log(user)
+                user.save (function (err, user) {
+                  if (err) {
+                    return res.status(400).send ({
+                      message: 'create failed'
+                    });
+                  } else {
+                    delete  user.password
+                    res.jsonp({
+                      code: 0,
+                      message: '注册成功',
+                      data : user
+                    })
+                  }
+                })
+              }
+
+              ...
+              ```
+            </script>
+          </section>
+          <section data-markdown>
+            <script type="text/template">
+              ##### 1.3.4.2 model.js实现
+              ```js
+              let mongoose = require('mongoose');
+              let Schema = mongoose.Schema;
+
+              let UserSchema = new Schema({
+                  name: {type: String, default: '', trim: true},
+                  sex: {type: String, default: '', trim: true},
+                  phone: {type: String, default: '', trim: true},
+                  password:{type: String, default: '', trim: true},
+                  email: {type: String, default: '', trim: true},
+              }, {collection: 'user'});
+
+              exports.UserSchema = UserSchema;
+              ```
+            </script>
+          </section>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ### 2.快速上手vue构建网站
+            [官方教程](https://cn.vuejs.org/)
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ##### 2.1 快速上手
+            使用 vue CLI生成项目  
+            全局安装vue CLI
+              ```
+              npm install -g @vue/cli
+              # OR
+              yarn global add @vue/cli
+              ```
+              创建项目
+              ```
+              vue create my-project
+              ```
+              启动项目
+              ```
+              cd my-project
+              npm run serve
+              # OR
+              yarn serve
+              ```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+            ##### 2.2 代码结构
+            ``` js
+            .		#项目总目录
+            ├── public		#项目公共静态文件
+            │	├── favicon.ico		#网站的favicon图片
+            │	├── index.html		#数据库配置文件
+            |
+            ├── src		#项目代码所在文件
+            │	├── assets		#项目引用图片
+            │	│	├── logo.png
+            │	├── components		#项目组件文件夹
+            │	│	├── HelloWorld.vue
+            |	├── App.vue		#示例项目页面
+            |	├── main.js		#程序入口文件
+            |
+            └── package.json		#Node项目依赖文件
             ```
           </script>
         </section>
         <section data-markdown>
           <script type="text/template">
-
+            ###### 2.3 关键代码说明（App.vue）
+            ```
+            <template>
+              <div id="app">
+                <img src="./assets/logo.png">
+                <HelloWorld msg="Welcome to Your Vue.js App"/>
+              </div>
+            </template>
+            
+            <script1>
+            import HelloWorld from './components/HelloWorld.vue'
+            
+            export default {
+              name: 'app',
+              components: {
+                HelloWorld
+              }
+            }
+            </script1>
+            
+            <style>
+            #app {
+              font-family: 'Avenir', Helvetica, Arial, sans-serif;
+              -webkit-font-smoothing: antialiased;
+              -moz-osx-font-smoothing: grayscale;
+              text-align: center;
+              color: #2c3e50;
+              margin-top: 60px;
+            }
+            </style>
+            ```
           </script>
+        </section>
+        <section>
+          <h4>2.4 常用UI库推荐</h4>
+          <p>
+            <a href="http://element-cn.eleme.io/#/zh-CN/component/installation" style="color: #0099ff">Element</a>    web推荐<br>
+            <a href="https://www.iviewui.com/docs/guide/install" style="color: #0099ff">iView</a><br>
+            <a href="https://muse-ui.org/#/zh-CN" style="color: #0099ff">Muse-UI</a>    适配推荐<br>
+            <a href="http://mint-ui.github.io/#!/zh-cn" style="color: #0099ff">Mint UI</a>    移动端推荐<br>
+          </p>
+        </section>
+        <section>
+          <h3>工具介绍</h3>
+          <h4>3.1 reveal.js</h4>
+          <p>
+						reveal.js comes with a few themes built in: <br>
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/black.css'); return false;">Black (default)</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/white.css'); return false;">White</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/league.css'); return false;">League</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/sky.css'); return false;">Sky</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/beige.css'); return false;">Beige</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/simple.css'); return false;">Simple</a> <br>
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/serif.css'); return false;">Serif</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/blood.css'); return false;">Blood</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/night.css'); return false;">Night</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/moon.css'); return false;">Moon</a> -
+						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/solarized.css'); return false;">Solarized</a>
+					</p>
+        </section>
+        <section>
+          <h3>配色方案</h3>
+          <p>
+            1. 整体配色：<br>
+            <a href="https://colorhunt.co/">https://colorhunt.co/</a><br>
+            2. RGB颜色值转换成十六进制颜色码：<br>
+            <a href="http://www.sioe.cn/yingyong/yanse-rgb-16/">http://www.sioe.cn/yingyong/yanse-rgb-16/</a>
+          </p>
+        </section>
+        <section>
+          <h3>其它工具</h3>
+          <p>
+            1. 正则表达式：<br>
+            <a href="https://regex101.com/library">https://regex101.com/library</a><br>
+            2. 工具合集：<br>
+            <a href="http://tool.chinaz.com/">站长工具</a><br>
+            <a href="https://tool.lu/">在线工具</a><br>
+            3. markdown画UML图：<br>
+            <a href="https://mermaidjs.github.io/">mermaid</a><br>
+          </p>
         </section>
         <section data-markdown>
           <script type="text/template">
-
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-
-          </script>
-        </section>
-        <section data-markdown>
-          <script type="text/template">
-
+            ## 谢谢
           </script>
         </section>
 			</div>
@@ -310,6 +444,14 @@
 			// - https://github.com/hakimel/reveal.js#configuration
 			// - https://github.com/hakimel/reveal.js#dependencies
 			Reveal.initialize({
+        // 是否显示当前幻灯片的页数
+        slideNumber: true,
+
+        // 是否将每个幻灯片改变加入到浏览器的历史记录中去
+        history: true,
+
+        width: '80%',
+        height: '90%',
 				dependencies: [
 					{ src: 'plugin/markdown/marked.js' },
 					{ src: 'plugin/markdown/markdown.js' },
